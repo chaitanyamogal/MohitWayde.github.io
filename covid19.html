@@ -1,0 +1,215 @@
+<html><center>
+    <head>
+        <title>Covid-19 tracker</title>
+        <link rel="stylesheet" href="design.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <style>
+            *{
+                font-family: sans-serif;
+            }
+            form {
+                max-width:40% ;
+                margin: 5px auto;
+                padding: 10px 20px;
+                background: #f4f7f8;
+                border-radius: 8px;
+            }
+            body{
+                background-color: #009879;
+            }
+            .content{
+            border-collapse: collapse;
+            margin:25px 0;
+            font-size: 0.9em;
+            min-width: 400px;
+            border-radius: 5px 5px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rbga(0,0,0,0.15);
+            }
+            .content thead tr{
+                background-color: #009879;
+                color: #ffffff;
+                text-align: left;
+                font-weight: bold;
+            }
+            .content th,.content td{
+                padding: 12px 15px;
+            }
+            .content tbody tr{
+                border-bottom: 1px solid #dddddd;
+            }
+            .content tbody tr:nth-of-type(even){
+                background-color: #f3f3f3;
+            }
+            .content tbody tr.active{
+                
+                color: #009879;
+            }
+            .content tbody{
+                font-weight: bold;
+                color: #009879;
+            }
+            h1{
+                color: #ffffff;
+            }
+            h2,h3{
+            color: #009879;
+            
+            }
+            .header2,.header3,.header4{
+                margin: 25px 25px;
+                text-align: left;
+                font-size: 0.9em;
+            }
+            .header1{
+                color:#009879;
+            }
+            .center{
+                color: #009879;
+            }
+            i{
+                color: black;
+            
+            }
+
+            /*.content tbody tr:last-of-type{
+            border-bottom: 2px solid #009879;
+            }
+            //this is for that last line
+            */
+        </style>
+        <h1>COVID-19 Live Cases Dashboard</h1>
+    </head>
+    <form>
+        <body>
+            <section name="World">
+                <h2>Worldwide Cases of COVID-19</h2>
+                <table class="content">
+                    <thead>
+                        <th>Confirmed</th>
+                        <th>Recovered</th>
+                        <th>Death</th>
+                    </thead>
+                    <tbody>
+                        <tr class="active">
+                            <td id="confirmed"></td>
+                            <td id="recovered"></td>
+                            <td id="death"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            <section name="country">
+                <h2>Indian Cases of COVID-19</h2>
+                <table class="content">
+                    <thead>
+                        <th>Confirmed</th>
+                        <th>Recovered</th>
+                        <th>Death</th>
+                    </thead>
+                    <tbody>
+                        <tr class="active">
+                            <td id="confirmedc"></td>
+                            <td id="recoveredc"></td>
+                            <td id="deathc"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            <section name="state">
+                <h2>Statewise Cases of COVID-19</h2>
+                <table class="content">
+                    <thead>
+                        <th>State</th>
+                        <th>Confirmed</th>
+                        <th>Recovered</th>
+                        <th>Death</th>
+                    </thead>
+                    <tbody id="statetable"></tbody>
+                </table>
+                <h1 class="header1">About this data</h3>
+                <h3 class="header2">This data changes rapidly and might not reflect some cases still being reported.</h3>    
+                <h3 class="header3">There are various sources that are tracking and aggregating coronavirus data.</h3>
+                <h3 class="header4">They update at different times and may have different ways of gathering data.</h3>
+                
+                
+            </section>  
+            <h2 class="center">Made with <i class="fa fa-heart" style="font-size:35px;color:red"></i></i> by Mohit</h1>
+                <a href="https://www.instagram.com/mohit_wayde/">
+                    <i class="fa fa-instagram "></i>
+                  </a><br>
+                  <a href="https://github.com/MohitWayde">
+                    <i class="fa fa-github"></i>
+            <script>
+                //world data
+                var active=document.getElementById("confirmed");
+                var recovered=document.getElementById("recovered");
+                var death=document.getElementById("death");
+
+                function getWorld()
+                {
+                fetch("https://api.covid19api.com/world/total")
+                .then(res =>{
+                    return res.json();
+                })
+                .then(data=>{
+                    confirmed.innerHTML=data.TotalConfirmed;
+                    recovered.innerHTML=data.TotalRecovered;
+                    death.innerHTML=data.TotalDeaths;
+                });
+                }
+                getWorld();
+
+                //country data
+                var confirmedc=document.getElementById("confirmedc");
+                var recoveredc=document.getElementById("recoveredc");
+                var deathc=document.getElementById("deathc");
+                function getCountry()
+                {
+                    fetch("https://api.apify.com/v2/key-value-stores/toDWvRj1JpTXiM8FF/records/LATEST?disableRedirect=true")
+                    .then(res=>{
+                        return res.json();
+                    })
+                    .then(data=>{
+                        confirmedc.innerHTML=data.activeCases;
+                        recoveredc.innerHTML=data.recovered;
+                        deathc.innerHTML=data.deaths;
+                        
+
+                    });
+                }
+                getCountry();
+
+                //State data
+                var statetable=document.getElementById("statetable");
+                function getStates()
+                {
+                    fetch("https://api.rootnet.in/covid19-in/stats/latest")
+                    .then(res=>{
+                        return res.json();
+                    })
+                    .then(data=>{
+                        var statedata=data.data.regional;
+                        Array.from(statedata).forEach(state=>{
+                            var html=`
+                            <tr>
+                                <td>${state.loc}</td>
+                                <td>${state.confirmedCasesIndian}</td>
+                                <td>${state.discharged}</td>
+                                <td>${state.deaths}</td>
+                        </tr>`;
+                            statetable.innerHTML+=html;
+                        });
+                    });
+                }
+                getStates();
+
+
+            </script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+            </body>
+    </form>
+    </center>
+</html>
+
+<!--              -->
